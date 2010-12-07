@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Schema xmlns="http://www.midgard-project.org/repligard/1.4">
+    <type name="com_meego_ratings_rating" table="com_meego_ratings_rating">
+        <property name="id" type="unsigned integer" primaryfield="id" index="yes" />
+        <property name="to" type="guid" parentfield="objectguid" field="objectguid">
+            <description>Object being rated</description>
+        </property>
+        <property name="rating" type="unsigned integer">
+            <description>The actual rating (from 1 to 5)</description>
+        </property>
+    </type>
+</Schema>

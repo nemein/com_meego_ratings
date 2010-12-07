@@ -1,0 +1,23 @@
+<div class="ratings">
+    <h2>Ratings</h2>
+
+    <ol tal:condition="com_meego_ratings/ratings">
+        <li tal:repeat="comment com_meego_ratings/ratings">
+            <div class="content" tal:content="structure comment/content">
+                First post!
+            </div>
+        </li>
+    </ol>
+
+    <div tal:condition="com_meego_ratings/can_post">
+        <p tal:condition="not: com_meego_ratings/ratings">
+            Be the first to rate!
+        </p>
+
+        <div class="comment" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_ratings', 'rating_create', array('to' => com_meego_ratings['to'].guid))"></div>
+    </div>
+
+    <p tal:condition="not: com_meego_ratings/can_post">
+        You need to log in to rate.
+    </p>
+</div>

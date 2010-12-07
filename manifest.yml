@@ -1,0 +1,31 @@
+version: 0.0.1
+requires:
+    midgardmvc_helper_forms:
+        - {type: github, user: midgardproject, repository: midgardmvc_helper_forms, branch: master}
+routes:
+#    list_feed:
+#        path: '/ratings/{$to}/atom.xml'
+    rating_create:
+        path: '/rating/create/{$to}'
+        controller: com_meego_ratings_controllers_rating
+        action: create
+        template_aliases:
+            content: cmc-edit-rating
+    rating_read:
+        path: '/rating/{$rating}'
+        controller: com_meego_ratings_controllers_rating
+        action: read
+        template_aliases:
+            content: cmc-show-rating
+    rating_update:
+        path: '/rating/{$rating}/update'
+        controller: com_meego_ratings_controllers_rating
+        action: update
+        template_aliases:
+            content: cmc-edit-rating
+    rating_delete:
+        path: '/rating/{$rating}/delete'
+        controller: com_meego_ratings_controllers_rating
+        action: delete
+        template_aliases:
+            content: cmc-delete-rating
