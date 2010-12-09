@@ -9,4 +9,10 @@
             <description>The actual rating (from 1 to 5)</description>
         </property>
     </type>
+
+    <type name="com_meego_ratings_rating_comment" extends="com_meego_ratings_rating">
+        <property name="comment" type="unsigned integer" link="com_meego_comments_comment:id">
+            <description>Comment the rating was posted with</description>
+        </property>
+    </type>
 </Schema>

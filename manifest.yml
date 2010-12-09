@@ -2,6 +2,8 @@ version: 0.0.1
 requires:
     midgardmvc_helper_forms:
         - {type: github, user: midgardproject, repository: midgardmvc_helper_forms, branch: master}
+    com_meego_comments:
+        - {type: github, user: nemein, repository: com_meego_comments, branch: master}
 routes:
 #    list_feed:
 #        path: '/ratings/{$to}/atom.xml'
