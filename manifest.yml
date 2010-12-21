@@ -7,27 +7,39 @@ requires:
 routes:
 #    list_feed:
 #        path: '/ratings/{$to}/atom.xml'
+    list_ratings:
+        path: '/ratings/{$to}'
+        controller: com_meego_ratings_controllers_rating
+        action: ratings
+        template_aliases:
+            content: cmc-show-ratings
     rating_create:
-        path: '/rating/create/{$to}'
+        path: '/ratings/create/{$to}'
         controller: com_meego_ratings_controllers_rating
         action: create
         template_aliases:
             content: cmc-edit-rating
     rating_read:
-        path: '/rating/{$rating}'
+        path: '/ratings/{$rating}'
         controller: com_meego_ratings_controllers_rating
         action: read
         template_aliases:
             content: cmc-show-rating
     rating_update:
-        path: '/rating/{$rating}/update'
+        path: '/ratings/{$rating}/update'
         controller: com_meego_ratings_controllers_rating
         action: update
         template_aliases:
             content: cmc-edit-rating
     rating_delete:
-        path: '/rating/{$rating}/delete'
+        path: '/ratings/{$rating}/delete'
         controller: com_meego_ratings_controllers_rating
         action: delete
         template_aliases:
             content: cmc-delete-rating
+    comment_create:
+        path: '/ratings/comment/create/{$to}'
+        controller: com_meego_comments_controllers_comment
+        action: comment
+        template_aliases:
+            content: cmc-edit-comment

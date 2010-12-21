@@ -3,11 +3,24 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
 {
     private $relocate = null;
 
+    // the maximum rating one can give to an object
+    // @todo: how to make it configurable?
+    private $maxrate = 5;
+
+    /**
+     * @todo: docs
+     */
     public function load_object(array $args)
     {
-        $this->object = new com_meego_ratings_rating($args['rating']);
+        if (array_key_exists('rating', $args))
+        {
+            $this->object = new com_meego_ratings_rating($args['rating']);
+        }
     }
 
+    /**
+     * @todo: docs
+     */
     public function prepare_new_object(array $args)
     {
         $this->data['parent'] = midgard_object_class::get_object_by_guid($args['to']);
@@ -15,6 +28,9 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         $this->object->to = $this->data['parent']->guid;
     }
 
+    /**
+     * @todo: docs
+     */
     public function load_form()
     {
         $this->form = midgardmvc_helper_forms::create('com_meego_ratings_rating');
@@ -29,7 +45,6 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
                 $this->request
             )
         );
-
 
         if ($this->request->is_subrequest())
         {
@@ -49,10 +64,18 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         $widget->set_placeholder('Rate here');
     }
 
+    /**
+     * @todo: docs
+     */
     public function process_form()
     {
         $this->form->process_post();
         $this->object->rating = $this->form->rating->get_value();
+
+        if ($this->object->rating > $this->maxrate)
+        {
+            $this->object->rating = $this->maxrate;
+        }
 
         if (isset($this->form->relocate))
         {
@@ -60,6 +83,9 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         }
     }
 
+    /**
+     * @todo: docs
+     */
     public function get_url_read()
     {
         return midgardmvc_core::get_instance()->dispatcher->generate_url
@@ -72,6 +98,9 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         );
     }
 
+    /**
+     * @todo: docs
+     */
     public function get_url_update()
     {
         return midgardmvc_core::get_instance()->dispatcher->generate_url
@@ -84,6 +113,9 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         );
     }
 
+    /**
+     * @todo: docs
+     */
     public function relocate_to_read()
     {
         if (!is_null($this->relocate))
@@ -91,5 +123,67 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
             midgardmvc_core::get_instance()->head->relocate($this->relocate);
         }
         midgardmvc_core::get_instance()->head->relocate($this->get_url_read());
+    }
+
+    /**
+     * Retrieves all ratings belonging to the object having the guid: $this->data['to'].
+     *
+     * Passes all ratings to the view ($this->data['ratings']).
+     * Calcualtes the average rating and passes that to the view too ($this->data['average']).
+     * Sets the rated flag ($this->data['rated']) to show if object was ever rated or not.
+     * Sets the can_post flag ($this->data['can_post']), so that the view can determine
+     * whether to show a POST form or not.
+     *
+     * @param array arguments
+     */
+    public function get_ratings(array $args)
+    {
+        $this->data['to'] = midgard_object_class::get_object_by_guid($args['to']);
+
+        if ( ! $this->data['to'] )
+        {
+            throw new midgardmvc_exception_notfound("rating target not found");
+        }
+
+        parent::get_read($args);
+
+        $this->data['average'] = false;
+        $this->data['rated'] = false;
+
+        $storage = new midgard_query_storage('com_meego_ratings_rating_author');
+        $q = new midgard_query_select($storage);
+        $q->set_constraint
+        (
+            new midgard_query_constraint
+            (
+                new midgard_query_property('to', $storage),
+                '=',
+                new midgard_query_value($this->data['to']->guid)
+            )
+        );
+
+        $q->add_order(new midgard_query_property('posted', $storage), SORT_ASC);
+        $q->execute();
+        $this->data['ratings'] = $q->list_objects();
+
+        $sum = 0;
+        if (count($this->data['ratings']))
+        {
+            $this->data['rated'] = true;
+            foreach ($this->data['ratings'] as $rating)
+            {
+                $sum += $rating->rating;
+            }
+            $this->data['average'] = round($sum / count($this->data['ratings']), 1);
+        }
+
+        if (midgardmvc_core::get_instance()->authentication->is_user())
+        {
+            $this->data['can_post'] = true;
+        }
+        else
+        {
+            $this->data['can_post'] = false;
+        }
     }
 }

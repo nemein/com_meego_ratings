@@ -1,20 +1,23 @@
 <div class="ratings">
     <h2>Ratings</h2>
 
-    <ol tal:condition="com_meego_ratings/ratings">
-        <li tal:repeat="comment com_meego_ratings/ratings">
-            <div class="content" tal:content="structure comment/content">
-                First post!
-            </div>
+    <span class="average" tal:condition="com_meego_ratings/average" tal:content="com_meego_ratings/average">Average rating</span>
+
+    <ul class="list" tal:condition="com_meego_ratings/ratings">
+        <li tal:repeat="rating com_meego_ratings/ratings">
+            <span class="rating" tal:content="structure rating/rating">First rating</span>
+            <span class="firstname" tal:content="rating/authorfirstname">Firstname</span>
+            <span class="lastname" tal:content="rating/authorlastname">Lastname</span>
         </li>
-    </ol>
+    </ul>
 
     <div tal:condition="com_meego_ratings/can_post">
-        <p tal:condition="not: com_meego_ratings/ratings">
+        <p tal:condition="not: com_meego_ratings/rated">
             Be the first to rate!
         </p>
 
-        <div class="comment" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_ratings', 'rating_create', array('to' => com_meego_ratings['to'].guid))"></div>
+        <div class="create-rating" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_ratings', 'rating_create', array('to' => com_meego_ratings['to'].guid))"></div>
+        <div class="create-comment" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_comments', 'comment_create', array('to' => com_meego_ratings['to'].guid))"></div>
     </div>
 
     <p tal:condition="not: com_meego_ratings/can_post">

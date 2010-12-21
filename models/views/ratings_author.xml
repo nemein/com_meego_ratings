@@ -5,6 +5,12 @@
         <join type="left" class="midgard_person">
             <condition left="com_meego_ratings_rating:metadata.creator" right="midgard_person:guid" />
         </join>
+<!--
+        <join type="left" class="midgard_user">
+            <condition left="com_meego_ratings_rating:metadata.creator" right="midgard_user:guid" />
+        </join>
+        <property name="authorusername" use="midgard_user:login" />
+-->
         <property name="ratingid" use="com_meego_ratings_rating:id" />
         <property name="ratingguid" use="com_meego_ratings_rating:guid" />
         <property name="authorfirstname" use="midgard_person:firstname" />
