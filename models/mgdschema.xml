@@ -8,11 +8,17 @@
         <property name="rating" type="unsigned integer">
             <description>The actual rating (from 1 to 5)</description>
         </property>
+        <property name="comment" type="unsigned integer" link="com_meego_comments_comment:id">
+            <description>Comment the rating was posted with</description>
+        </property>
     </type>
 
+<!-- this does not seem to work for creating a new record in DB
     <type name="com_meego_ratings_rating_comment" extends="com_meego_ratings_rating">
         <property name="comment" type="unsigned integer" link="com_meego_comments_comment:id">
             <description>Comment the rating was posted with</description>
         </property>
     </type>
+-->
+
 </Schema>

@@ -8,6 +8,7 @@
             <span class="rating" tal:content="structure rating/rating">First rating</span>
             <span class="firstname" tal:content="rating/authorfirstname">Firstname</span>
             <span class="lastname" tal:content="rating/authorlastname">Lastname</span>
+            <div tal:condition="rating/ratingcomment" tal:content="rating/ratingcommentcontent">Comment</div>
         </li>
     </ul>
 
@@ -17,7 +18,6 @@
         </p>
 
         <div class="create-rating" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_ratings', 'rating_create', array('to' => com_meego_ratings['to'].guid))"></div>
-        <div class="create-comment" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_comments', 'comment_create', array('to' => com_meego_ratings['to'].guid))"></div>
     </div>
 
     <p tal:condition="not: com_meego_ratings/can_post">

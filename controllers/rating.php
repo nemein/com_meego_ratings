@@ -4,7 +4,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
     private $relocate = null;
 
     // the maximum rating one can give to an object
-    // @todo: how to make it configurable?
+    // @todo: make it configurable
     private $maxrate = 5;
 
     /**
@@ -56,25 +56,62 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         }
 
         // Basic element information
-        $field = $this->form->add_field('rating', 'text');
-        $field->set_value($this->object->rating);
+        $field = $this->form->add_field('rating', 'integer');
+        $field->set_value(3);
+        if ($this->object->rating > 0)
+        {
+            $field->set_value($this->object->rating);
+        }
 
-        // @todo: use a different widget
+        $widget = $field->set_widget('starrating');
+        // @todo: get the rating options from configuration
+        $widget->add_option('Very bad', 1);
+        $widget->add_option('Poor', 2);
+        $widget->add_option('Average', 3);
+        $widget->add_option('Good', 4);
+        $widget->add_option('Excellent', 5);
+        //$widget->set_placeholder('Rate here');
+
+        $field = $this->form->add_field('comment', 'text');
+        $field->set_value('');
         $widget = $field->set_widget('textarea');
-        $widget->set_placeholder('Rate here');
     }
 
     /**
-     * @todo: docs
+     * Processing the POSTed form.
+     * Makes sure that rating value is within accepted range.
+     * If comment also submitted then it creates a new comment object,
+     * gets the ID of the comment object and assigns it to the rating object.
+     *
      */
     public function process_form()
     {
         $this->form->process_post();
+
+        // make sure rating is within range
         $this->object->rating = $this->form->rating->get_value();
 
         if ($this->object->rating > $this->maxrate)
         {
             $this->object->rating = $this->maxrate;
+        }
+
+        // if comment is also given then create a new comment entry
+        if (isset($this->form->comment))
+        {
+            $comment = $this->form->comment->get_value();
+            if (strlen($comment))
+            {
+                $obj = new com_meego_comments_comment();
+                $obj->to = $this->object->to;
+                $obj->content = $comment;
+                $obj->create();
+                if ($obj->id)
+                {
+                    $this->object->comment = $obj->id;
+                    var_dump($this->object->comment);
+                }
+            }
         }
 
         if (isset($this->form->relocate))
@@ -147,6 +184,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
 
         parent::get_read($args);
 
+        $this->data['ratings'] = array();
         $this->data['average'] = false;
         $this->data['rated'] = false;
 
@@ -164,15 +202,21 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
 
         $q->add_order(new midgard_query_property('posted', $storage), SORT_ASC);
         $q->execute();
-        $this->data['ratings'] = $q->list_objects();
+        $ratings = $q->list_objects();
 
         $sum = 0;
-        if (count($this->data['ratings']))
+        if (count($ratings))
         {
             $this->data['rated'] = true;
-            foreach ($this->data['ratings'] as $rating)
+            foreach ($ratings as $rating)
             {
                 $sum += $rating->rating;
+                if ($rating->ratingcomment)
+                {
+                    $comment = new com_meego_comments_comment($rating->ratingcomment);
+                    $rating->ratingcommentcontent = $comment->content;
+                }
+                array_push($this->data['ratings'], $rating);
             }
             $this->data['average'] = round($sum / count($this->data['ratings']), 1);
         }
@@ -185,5 +229,20 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         {
             $this->data['can_post'] = false;
         }
+
+        // @todo: can't add elements to head from here.. why?
+
+        // Enable jQuery in case it is not enabled yet
+        midgardmvc_core::get_instance()->head->enable_jquery();
+
+        // Add rating CSS
+        $css = array
+        (
+            'href' => MIDGARDMVC_STATIC_URL . '/com_meego_ratings/js/jquery.rating/jquery.rating.css',
+            'rel' => 'stylesheet'
+        );
+        midgardmvc_core::get_instance()->head->add_link($css);
+        // Add rating js
+        midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . '/com_meego_ratings/js/jquery.rating/jquery.rating.pack.js', true);
     }
 }
