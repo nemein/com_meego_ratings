@@ -4,6 +4,8 @@ requires:
         - {type: github, user: midgardproject, repository: midgardmvc_helper_forms, branch: master}
     com_meego_comments:
         - {type: github, user: nemein, repository: com_meego_comments, branch: master}
+    eu_urho_widgets:
+        - {type: git, url: http://git.gitorious.org/urho/eu_urho_widgets.git, branch: master}
 routes:
 #    list_feed:
 #        path: '/ratings/{$to}/atom.xml'

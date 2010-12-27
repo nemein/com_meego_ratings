@@ -63,7 +63,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
             $field->set_value($this->object->rating);
         }
 
-        $widget = $field->set_widget('starrating');
+        $widget = $field->set_widget('eu_urho_widgets_starrating');
         // @todo: get the rating options from configuration
         $widget->add_option('Very bad', 1);
         $widget->add_option('Poor', 2);
