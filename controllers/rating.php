@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package com_meego_ratings
+ * @author The Midgard Project, http://www.midgard-project.org
+ * @copyright The Midgard Project, http://www.midgard-project.org
+ * @license http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
+ */
 class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_baseclasses_crud
 {
     private $relocate = null;
@@ -8,7 +14,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
     private $maxrate = 5;
 
     /**
-     * @todo: docs
+     * Load the object from database
      */
     public function load_object(array $args)
     {
@@ -19,7 +25,30 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
     }
 
     /**
-     * @todo: docs
+     * Only process the creation if rating is not null or 0
+     */
+    public function post_create(array $args)
+    {
+        $this->get_create($args);
+        try
+        {
+            $this->process_form();
+
+            if ($this->object->rating)
+            {
+                $this->object->create();
+            }
+            // TODO: add uimessage of $e->getMessage();
+            $this->relocate_to_read();
+        }
+        catch (midgardmvc_helper_forms_exception_validation $e)
+        {
+            // TODO: UImessage
+        }
+    }
+
+    /**
+     * Prepare a new rating object by setting its to field
      */
     public function prepare_new_object(array $args)
     {
@@ -29,7 +58,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
     }
 
     /**
-     * @todo: docs
+     * Load the form, set defaults
      */
     public function load_form()
     {
@@ -57,7 +86,10 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
 
         // Basic element information
         $field = $this->form->add_field('rating', 'integer');
-        $field->set_value(3);
+
+        // Default rating is 0
+        $field->set_value(0);
+
         if ($this->object->rating > 0)
         {
             $field->set_value($this->object->rating);
@@ -70,7 +102,6 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         $widget->add_option('Average', 3);
         $widget->add_option('Good', 4);
         $widget->add_option('Excellent', 5);
-        //$widget->set_placeholder('Rate here');
 
         $field = $this->form->add_field('comment', 'text');
         $field->set_value('');
@@ -86,15 +117,12 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
      */
     public function process_form()
     {
-        $this->form->process_post();
-
-        // make sure rating is within range
-        $this->object->rating = $this->form->rating->get_value();
-
-        if ($this->object->rating > $this->maxrate)
+        if (isset($this->form->relocate))
         {
-            $this->object->rating = $this->maxrate;
+            $this->relocate = $this->form->relocate->get_value();
         }
+
+        $this->form->process_post();
 
         // if comment is also given then create a new comment entry
         if (isset($this->form->comment))
@@ -102,6 +130,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
             $comment = $this->form->comment->get_value();
             if (strlen($comment))
             {
+                // save comment only if it is not empty
                 $obj = new com_meego_comments_comment();
                 $obj->to = $this->object->to;
                 $obj->content = $comment;
@@ -109,14 +138,22 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
                 if ($obj->id)
                 {
                     $this->object->comment = $obj->id;
-                    var_dump($this->object->comment);
                 }
             }
         }
 
-        if (isset($this->form->relocate))
+        // make sure rating is within range
+        $this->object->rating = $this->form->rating->get_value();
+
+        if (! $this->object->rating)
         {
-            $this->relocate = $this->form->relocate->get_value();
+          // don't save 0 rating
+          return false;
+        }
+
+        if ($this->object->rating > $this->maxrate)
+        {
+            $this->object->rating = $this->maxrate;
         }
     }
 
@@ -155,7 +192,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
      */
     public function relocate_to_read()
     {
-        if (!is_null($this->relocate))
+        if (! is_null($this->relocate))
         {
             midgardmvc_core::get_instance()->head->relocate($this->relocate);
         }
@@ -174,6 +211,41 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
      * @param array arguments
      */
     public function get_ratings(array $args)
+    {
+        $this->get_average($args);
+
+        if (midgardmvc_core::get_instance()->authentication->is_user())
+        {
+            $this->data['can_post'] = true;
+        }
+        else
+        {
+            $this->data['can_post'] = false;
+        }
+
+        // @todo: can't add elements to head from here.. why?
+
+        // Enable jQuery in case it is not enabled yet
+        midgardmvc_core::get_instance()->head->enable_jquery();
+
+        // Add rating CSS
+        $css = array
+        (
+            'href' => MIDGARDMVC_STATIC_URL . '/com_meego_ratings/js/jquery.rating/jquery.rating.css',
+            'rel' => 'stylesheet'
+        );
+        midgardmvc_core::get_instance()->head->add_link($css);
+        // Add rating js
+        midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . '/com_meego_ratings/js/jquery.rating/jquery.rating.pack.js', true);
+    }
+
+    /**
+     * Sets the average rating of the package
+     * Sets the flag showing if the package was ever rated or not
+     * Sets $this->data['stars'] that can be directly put to pages showing
+     * the stars
+     */
+    public function get_average(array $args)
     {
         $this->data['to'] = midgard_object_class::get_object_by_guid($args['to']);
 
@@ -210,39 +282,74 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
             $this->data['rated'] = true;
             foreach ($ratings as $rating)
             {
+                $rating->stars = '';
                 $sum += $rating->rating;
                 if ($rating->ratingcomment)
                 {
                     $comment = new com_meego_comments_comment($rating->ratingcomment);
                     $rating->ratingcommentcontent = $comment->content;
                 }
+                if ($rating->rating)
+                {
+                    $rating->stars = $this->draw_stars($rating->rating);
+                }
                 array_push($this->data['ratings'], $rating);
             }
             $this->data['average'] = round($sum / count($this->data['ratings']), 1);
         }
 
-        if (midgardmvc_core::get_instance()->authentication->is_user())
-        {
-            $this->data['can_post'] = true;
-        }
-        else
-        {
-            $this->data['can_post'] = false;
-        }
+        $this->get_stars($this->data['average']);
+    }
 
-        // @todo: can't add elements to head from here.. why?
+    /**
+     * Sets $this->data['stars'] with an HTML snippet showing the stars
+     */
+    public function get_stars($rating)
+    {
+        $this->data['stars'] = $this->draw_stars($rating);
+    }
 
-        // Enable jQuery in case it is not enabled yet
-        midgardmvc_core::get_instance()->head->enable_jquery();
-
-        // Add rating CSS
-        $css = array
-        (
-            'href' => MIDGARDMVC_STATIC_URL . '/com_meego_ratings/js/jquery.rating/jquery.rating.css',
-            'rel' => 'stylesheet'
-        );
-        midgardmvc_core::get_instance()->head->add_link($css);
-        // Add rating js
-        midgardmvc_core::get_instance()->head->add_jsfile(MIDGARDMVC_STATIC_URL . '/com_meego_ratings/js/jquery.rating/jquery.rating.pack.js', true);
+    /**
+     * Returns an HTML snippet with stars
+     */
+    private function draw_stars($average)
+    {
+      $i = 0;
+      $retval = '';
+      while ($i < 5)
+      {
+          if ($average >= $i)
+          {
+              if (($average - $i) < 1)
+              {
+                  if ($average - $i == 0)
+                  {
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star.png\" alt=\" \" />";
+                  }
+                  else if ($average - $i <= 0.25)
+                  {
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-25.png\" alt=\"*\" />";
+                  }
+                  else if ($average - $i <= 0.5)
+                  {
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-50.png\" alt=\"*\" />";
+                  }
+                  else
+                  {
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-75.png\" alt=\"*\" />";
+                  }
+              }
+              else
+              {
+                  $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-hover.png\" alt=\"*\" />";
+              }
+          }
+          else
+          {
+              $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star.png\" alt=\" \" />";
+          }
+          $i++;
+      }
+      return $retval;
     }
 }

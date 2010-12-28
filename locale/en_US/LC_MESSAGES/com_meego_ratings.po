@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+
+"Project-Id-Version: com_meego_ratings\n"
+"Report-Msgid-Bugs-To:\n"
+"PO-Revision-Date:\n"
+"Last-Translator:\n"
+"Language-Team: com_meego_ratings <info@midgard-project.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "ratings"
+msgstr "Comments and ratings"
+
+msgid "login_to_rate"
+msgstr "Please login to rate"
+
+msgid "first_to_rate"
+msgstr "Be the first to rate!"

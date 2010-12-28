@@ -1,0 +1,20 @@
+<div class="ratings">
+    <h2 i18n:translate="'ratings'"/>
+
+    <div tal:condition="com_meego_ratings/can_post">
+      <p tal:condition="not: com_meego_ratings/rated" i18n:translate="'first_to_rate'"/>
+      <div class="create-rating" tal:content="structure php:midgardmvc.templating.dynamic_load('com_meego_ratings', 'rating_create', array('to' => com_meego_ratings['to'].guid))"></div>
+    </div>
+
+    <p tal:condition="not: com_meego_ratings/can_post" i18n:translate="'login_to_rate'"/>
+
+    <ul class="list" tal:condition="com_meego_ratings/ratings">
+      <li tal:repeat="rating com_meego_ratings/ratings">
+        <span class="firstname" tal:content="rating/authorfirstname">Firstname</span>
+        <span class="lastname" tal:content="rating/authorlastname">Lastname</span>
+        <div class="rating" tal:condition="rating/stars" tal:content="structure rating/stars">First rating</div>
+        <div tal:condition="rating/ratingcomment" tal:content="rating/ratingcommentcontent">Comment</div>
+      </li>
+    </ul>
+
+</div>
