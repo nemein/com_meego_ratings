@@ -13,7 +13,8 @@
         <span class="firstname" tal:content="rating/authorfirstname">Firstname</span>
         <span class="lastname" tal:content="rating/authorlastname">Lastname</span>
         <div class="rating" tal:condition="rating/stars" tal:content="structure rating/stars">First rating</div>
-        <div tal:condition="rating/ratingcomment" tal:content="rating/ratingcommentcontent">Comment</div>
+        <div class="comment" tal:condition="rating/ratingcomment" tal:content="rating/ratingcommentcontent">Comment</div>
+        <div class="date" tal:content="rating/date">Date</div>
       </li>
     </ul>
 

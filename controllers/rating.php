@@ -34,7 +34,8 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         {
             $this->process_form();
 
-            if ($this->object->rating)
+            if (   $this->object->rating
+                || $this->object->comment)
             {
                 $this->object->create();
             }
@@ -145,9 +146,9 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         // make sure rating is within range
         $this->object->rating = $this->form->rating->get_value();
 
-        if (! $this->object->rating)
+        if (  ! $this->object->rating
+            && ! $this->object->comment)
         {
-          // don't save 0 rating
           return false;
         }
 
@@ -272,30 +273,42 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
             )
         );
 
-        $q->add_order(new midgard_query_property('posted', $storage), SORT_ASC);
+        $q->add_order(new midgard_query_property('posted', $storage), SORT_DESC);
         $q->execute();
         $ratings = $q->list_objects();
 
         $sum = 0;
+        // only contains ratings where rating is not 0
+        $num_of_valid_ratings = 0;
         if (count($ratings))
         {
             $this->data['rated'] = true;
             foreach ($ratings as $rating)
             {
                 $rating->stars = '';
-                $sum += $rating->rating;
                 if ($rating->ratingcomment)
                 {
                     $comment = new com_meego_comments_comment($rating->ratingcomment);
                     $rating->ratingcommentcontent = $comment->content;
                 }
-                if ($rating->rating)
+                if (   $rating->rating
+                    || $rating->ratingcomment)
                 {
+                    // add a new property containing the stars to the rating object
                     $rating->stars = $this->draw_stars($rating->rating);
+                    // pimp the posted date
+                    $rating->date = gmdate('Y-m-d H:i e', strtotime($rating->posted));
+
+                    $sum += $rating->rating;
+                    if ($rating->rating)
+                    {
+                        // count only non zero ratings
+                        ++$num_of_valid_ratings;
+                    }
                 }
                 array_push($this->data['ratings'], $rating);
             }
-            $this->data['average'] = round($sum / count($this->data['ratings']), 1);
+            $this->data['average'] = round($sum / $num_of_valid_ratings, 1);
         }
 
         $this->get_stars($this->data['average']);

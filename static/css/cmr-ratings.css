@@ -1,8 +1,45 @@
+div.create-rating {
+margin: 0 0 30px 0;
+}
+
 span.star-rating-control {
 display: block;
 height: 30px;
 }
 
+div.create-rating textarea {
+width: 100%;
+height: 5em;
+}
+
 input.midgardmvc_helper_forms_form_save {
 display: block;
+margin: 10px 0 0 0;
+}
+
+div.ratings ul.list {
+padding: 0;
+}
+
+div.ratings ul.list li {
+list-style: none;
+padding: 5px;
+margin: 0 0 15px;
+clear: both;
+background-color: paleGoldenRod;
+}
+
+div.ratings ul.list li div.rating {
+float: right;
+}
+
+div.ratings ul.list li div.comment {
+margin: 5px 0 5px 20px;
+padding: 2px;
+}
+
+div.ratings ul.list li div.date {
+clear: both;
+color: grey;
+text-align: right;
 }
