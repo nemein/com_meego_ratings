@@ -118,12 +118,11 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
      */
     public function process_form()
     {
+        $this->form->process_post();
         if (isset($this->form->relocate))
         {
             $this->relocate = $this->form->relocate->get_value();
         }
-
-        $this->form->process_post();
 
         // if comment is also given then create a new comment entry
         if (isset($this->form->comment))
