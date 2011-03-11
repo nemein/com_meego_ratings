@@ -324,7 +324,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
     /**
      * Returns an HTML snippet with stars
      */
-    private function draw_stars($average)
+    public function draw_stars($average)
     {
       $i = 0;
       $retval = '';
