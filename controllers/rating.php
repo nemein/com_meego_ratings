@@ -257,7 +257,7 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         parent::get_read($args);
 
         $this->data['ratings'] = array();
-        $this->data['average'] = false;
+        $this->data['average'] = 0;
         $this->data['rated'] = false;
 
         $storage = new midgard_query_storage('com_meego_ratings_rating_author');
@@ -307,7 +307,11 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
                 }
                 array_push($this->data['ratings'], $rating);
             }
-            $this->data['average'] = round($sum / $num_of_valid_ratings, 1);
+
+            if ($num_of_valid_ratings)
+            {
+                $this->data['average'] = round($sum / $num_of_valid_ratings, 1);
+            }
         }
 
         $this->get_stars($this->data['average']);
