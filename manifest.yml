@@ -12,43 +12,43 @@ routes:
 #    list_feed:
 #        path: '/ratings/{$to}/atom.xml'
     list_ratings:
-        path: '/ratings/{$to}'
+        path: '/{$to}'
         controller: com_meego_ratings_controllers_rating
         action: ratings
         template_aliases:
             content: cmr-show-ratings
     rating_create:
-        path: '/ratings/create/{$to}'
+        path: '/create/{$to}'
         controller: com_meego_ratings_controllers_rating
         action: create
         template_aliases:
             content: cmr-edit-rating
     rating_read:
-        path: '/ratings/{$rating}'
+        path: '/read/{$rating}'
         controller: com_meego_ratings_controllers_rating
         action: read
         template_aliases:
             content: cmr-show-rating
     rating_update:
-        path: '/ratings/{$rating}/update'
+        path: '/update/{$rating}'
         controller: com_meego_ratings_controllers_rating
         action: update
         template_aliases:
             content: cmr-edit-rating
     rating_delete:
-        path: '/ratings/{$rating}/delete'
+        path: '/delete/{$rating}'
         controller: com_meego_ratings_controllers_rating
         action: delete
         template_aliases:
             content: cmr-delete-rating
     comment_create:
-        path: '/ratings/comment/create/{$to}'
+        path: '/comment/create/{$to}'
         controller: com_meego_comments_controllers_comment
         action: comment
         template_aliases:
             content: cmc-edit-comment
     get_average:
-        path: '/ratings/stars/{$to}'
+        path: '/stars/{$to}'
         controller: com_meego_ratings_controllers_rating
         action: average
         template_aliases:
