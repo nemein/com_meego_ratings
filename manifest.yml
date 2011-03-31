@@ -1,4 +1,5 @@
 version: 0.0.1
+
 requires:
     midgardmvc_helper_forms:
         - {type: github, user: midgardproject, repository: midgardmvc_helper_forms, branch: master}
@@ -6,11 +7,14 @@ requires:
         - {type: github, user: nemein, repository: com_meego_comments, branch: master}
     eu_urho_widgets:
         - {type: git, url: http://git.gitorious.org/urho/eu_urho_widgets.git, branch: master}
+
 template_injector: com_meego_ratings_injector
+
 routes:
 
 #    list_feed:
-#        path: '/ratings/{$to}/atom.xml'
+#        path: '/{$to}/atom.xml'
+
     list_ratings:
         path: '/{$to}'
         controller: com_meego_ratings_controllers_rating
