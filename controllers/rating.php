@@ -64,6 +64,14 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
     public function load_form()
     {
         $this->form = midgardmvc_helper_forms::create('com_meego_ratings_rating');
+        $this->prepare_form();
+    }
+
+    /**
+     * Sets action and widgets
+     */
+    public function prepare_form()
+    {
         $this->form->set_action
         (
             midgardmvc_core::get_instance()->dispatcher->generate_url
