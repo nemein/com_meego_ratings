@@ -335,8 +335,10 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
 
     /**
      * Returns an HTML snippet with stars
+     * @param float average rating
+     * @param string if used then it is appended to the star icon names; e.g. star-big.png
      */
-    public function draw_stars($average)
+    public function draw_stars($average, $suffix = '')
     {
       $i = 0;
       $retval = '';
@@ -348,29 +350,29 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
               {
                   if ($average - $i == 0)
                   {
-                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star.png\" alt=\" \" />";
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star" . $suffix . ".png\" alt=\" \" />";
                   }
                   else if ($average - $i <= 0.25)
                   {
-                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-25.png\" alt=\"*\" />";
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-25" . $suffix . ".png\" alt=\"*\" />";
                   }
                   else if ($average - $i <= 0.5)
                   {
-                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-50.png\" alt=\"*\" />";
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-50" . $suffix . ".png\" alt=\"*\" />";
                   }
                   else
                   {
-                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-75.png\" alt=\"*\" />";
+                      $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-75" . $suffix . ".png\" alt=\"*\" />";
                   }
               }
               else
               {
-                  $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-hover.png\" alt=\"*\" />";
+                  $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star-hover" . $suffix . ".png\" alt=\"*\" />";
               }
           }
           else
           {
-              $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star.png\" alt=\" \" />";
+              $retval .= "<img src=\"" . MIDGARDMVC_STATIC_URL . "/eu_urho_widgets/img/icons/star" . $suffix . ".png\" alt=\" \" />";
           }
           $i++;
       }
