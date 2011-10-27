@@ -274,13 +274,13 @@ class com_meego_ratings_controllers_rating extends midgardmvc_core_controllers_b
         (
             new midgard_query_constraint
             (
-                new midgard_query_property('to', $storage),
+                new midgard_query_property('to'),
                 '=',
                 new midgard_query_value($this->data['to']->guid)
             )
         );
 
-        $q->add_order(new midgard_query_property('posted', $storage), SORT_DESC);
+        $q->add_order(new midgard_query_property('posted'), SORT_DESC);
         $q->execute();
         $ratings = $q->list_objects();
 
