@@ -48,7 +48,7 @@ class com_meego_ratings_injector
      *
      * @param object com_meego_comments_comment object
      */
-    public function delete_rating_handler(com_meego_comments_comment $comment)
+    public static function delete_rating_handler(com_meego_comments_comment $comment)
     {
         $mvc = midgardmvc_core::get_instance();
 
